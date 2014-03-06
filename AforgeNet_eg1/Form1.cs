@@ -34,6 +34,7 @@ namespace AforgeNet_eg1
             var bmp = src;
 
 
+            //去掉蓝色线条
             for (var w = 0; w < bmp.Width; w++)
             {
                 for (var h = 0; h < bmp.Height; h++)
@@ -60,6 +61,7 @@ namespace AforgeNet_eg1
             //去噪
             try
             {
+                //白色变黑色，黑色变白色
                 var bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
                     bmp.PixelFormat);
                 var bmpDataBuffer = new byte[bmpData.Stride * bmpData.Height];
@@ -74,7 +76,7 @@ namespace AforgeNet_eg1
                             count++;
                             bmpDataBuffer[h * bmpData.Stride + w] = 255;
                         }
-                        else
+                        else if (bmpDataBuffer[h * bmpData.Stride + w] == 255)
                         {
                             bmpDataBuffer[h * bmpData.Stride + w] = 0;
                         }
@@ -96,6 +98,7 @@ namespace AforgeNet_eg1
 
 
 
+                //宽度最小2，高度最小10，宽度最大14，高度最大16过滤噪音
                 bmp = new BlobsFiltering(2, 10, 14, 16).Apply(bmp);
                 e.Graphics.DrawImage(bmp, new Point(10, (bmp.Height + 10) * index));
                 index++;
