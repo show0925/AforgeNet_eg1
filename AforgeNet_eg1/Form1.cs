@@ -28,7 +28,8 @@ namespace AforgeNet_eg1
         private Dictionary<Rectangle, Bitmap> Result = new Dictionary<Rectangle, Bitmap>();
 
         //待识别图像固定为12x16，用3x4的小块进行切分统计，总共有16份数据作为输入
-        ActivationNetwork network = new ActivationNetwork(new SigmoidFunction(2), 16, 4, 13);
+        ActivationNetwork actNetwork = new ActivationNetwork(new SigmoidFunction(2), 16, 14, 13);
+        private Network network;
 
         //待识别12x16图像
         List<Bitmap> bmpsToRecognized = new List<Bitmap>(); 
@@ -108,20 +109,32 @@ namespace AforgeNet_eg1
                 });
 
 
-            TransNetWork(input.ToArray(), output.ToArray());
-            network.Save("network.data");
+            //TransNetWork(input.ToArray(), output.ToArray());
+            //network.Save("network1.data");
+            network = Network.Load("network.data");
 
             //测试
-            var result = network.Compute(input[11]).ToArray();
+            for (int i = 0; i < output.Count; i++)
+            {
+                var result = network.Compute(input[i]).Select(r => ((int)(r*10))/10.0).ToList();
+                var tmp = output[i].ToList();
 
+                var r1Index = result.FindIndex(r => r >= 0.9);
+                var r2Index = tmp.FindIndex(r => r >= 0.9);
 
-            var tmp = result;
+                if (r1Index != r2Index)
+                {
+                    var i33 = 0;
+                }
+
+                Console.WriteLine(i);
+            }
         }
 
         private void TransNetWork(double[][] input, double[][] output)
         {
             // create teacher
-            var teacher = new BackPropagationLearning(network);
+            var teacher = new BackPropagationLearning(actNetwork);
             
             // loop
             int iteration = 0;
